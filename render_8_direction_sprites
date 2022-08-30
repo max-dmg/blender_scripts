@@ -2,7 +2,31 @@ import bpy
 import os
 import math
 
-def render8directions_selected_objects(path):
+
+# ORIGINAL AUTHOR: FoozleCC
+# GITHUB SOURCE: https://github.com/FoozleCC/blender_scripts
+# ITCH.IO SOURCE: https://foozlecc.itch.io/
+
+
+# PERSONAL NOTES:
+# This script will render multiple animations and sprites and camera angles.
+# - you have to select the armature and run the script for it to work.
+# - you have to run it from this script manually (can't figure out how to run it in the console)
+# - the names of the actions on the nla tracks have to be correct and the same as the animation data
+# - tip: run Blender from the terminal (or with a console) to see when the rendering is complete (there's no progress notifications)
+# - turns out I didn't make much changes to the original script...
+
+
+# OTHER NOTES:
+# For anyone reading this, the output is as follows:
+# - output folder name (folder - this is specified right at the bottom of this script, you have to manually change it for now)
+#    - action name/s (folder/s)
+#        - angles rendered (folder/s)
+#            - action_angle_animationframe.png (binary file)
+# This may be excessive, but my script I wrote (I'm trying to turn into a Godot plugin) takes all of these and builds a single SpriteFrame resource for each object rendered.
+
+
+def render_sprites(path):
     # path fixing
     path = os.path.abspath(path)
 
@@ -42,9 +66,11 @@ def render8directions_selected_objects(path):
             
             #set which actions you want to render.  Make sure to use the exact name of the action!
             if (
-#                 a.name == "idle"
-                 a.name == "run"
-#                 or a.name == "dying"
+                 a.name == "Idle"
+                 or a.name == "Move"
+                 or a.name == "Die"
+                 or a.name == "Attack"
+                 or a.name == "Hit"
                 ):
                 
                 #create folder for animation
@@ -54,22 +80,23 @@ def render8directions_selected_objects(path):
                 
                 #loop through all 8 directions
                 for angle in range(0, 360, 45):
-                    if angle == 0:
-                        angleDir = "E"
-                    if angle == 45:
-                        angleDir = "NE"
-                    if angle == 90:
-                        angleDir = "N"
-                    if angle == 135:
-                        angleDir = "NW"
-                    if angle == 180:
-                        angleDir = "W"
-                    if angle == 225:
-                        angleDir = "SW"
-                    if angle == 270:
-                        angleDir = "S"
-                    if angle == 315:
-                        angleDir = "SE"
+#                    if angle == 0:
+#                        angleDir = "E"
+#                    if angle == 45:
+#                        angleDir = "NE"
+#                    if angle == 90:
+#                        angleDir = "N"
+#                    if angle == 135:
+#                        angleDir = "NW"
+#                    if angle == 180:
+#                        angleDir = "W"
+#                    if angle == 225:
+#                        angleDir = "SW"
+#                    if angle == 270:
+#                        angleDir = "S"
+#                    if angle == 315:
+#                        angleDir = "SE"
+                    angleDir = str(angle)
                         
                     #set which angles we want to render.
                     if (
@@ -89,7 +116,7 @@ def render8directions_selected_objects(path):
                             os.makedirs(animation_folder)
                         
                         #rotate the model for the new angle
-                        bpy.context.active_object.rotation_euler[2] = math.radians(angle)
+                        bpy.context.active_object.rotation_euler[2] = math.radians(-angle)
                         
                         # the below is for the use case where the root needed to be translated.
 #                        obRoot.rotation_euler[2] = math.radians(angle)
@@ -115,5 +142,8 @@ def render8directions_selected_objects(path):
                                                   animation=False, 
                                                   write_still=True
                                                  ) 
+
+
         
-render8directions_selected_objects('C:\\tmp\\Mutant')
+render_sprites('/absolute/path/to/output/directory/output')
+
